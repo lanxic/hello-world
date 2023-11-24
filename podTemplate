@@ -1,0 +1,17 @@
+podTemplate(yaml: '''
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: docker
+    image: lanxic/docker-dind-aws-kubectl:latest
+    securityContext:
+      privileged: true
+''') {
+    node(POD_LABEL) {
+        git 'https://github.com/lanxic/hello-world.git'
+        container('docker') {
+            sh 'docker version && docker build -t lanxic/hello-world:latest .'
+        }
+    }
+}
