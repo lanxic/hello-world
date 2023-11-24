@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
-	return 'Hello World from EKS'
+	return 'Hello World from AWS-EKS'
 
 # main driver function
 if __name__ == '__main__':
