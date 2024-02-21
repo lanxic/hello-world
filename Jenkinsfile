@@ -8,6 +8,7 @@ pipeline {
       stage('Build-Docker-Image') {
           steps {
               script {
+                  sh "id"
                   docker.build("lanxic/hello-world:latest")
               }
           }
