@@ -1,29 +1,25 @@
 pipeline {
   environment {
+    CONTAINER_REGISTRY_CREDENTIALS = credentials('dockerhub-login')
     AWS_DEFAULT_REGION = 'ap-southeast-3'
   }
 
   agent any
   stages {
       stage('Build-Docker-Image') {
-          steps {
-              script {
-                  sh "id"
-                  docker.build("lanxic/hello-world:latest")
-              }
+        steps {
+          container('docker') {
+            sh 'docker build -t lanxic/hello-world:latest .'
           }
+        }
       }
       stage('Login and Push to register hub') {
-          steps {
-              script {
-                  withCredentials([usernamePassword(credentialsId: 'dockerhub-login', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                      docker.withRegistry('https://registry.hub.docker.com', 'docker') {
-                          docker.login(username: USERNAME, password: PASSWORD)
-                          docker.image("lanxic/hello-world:latest").push()
-                      }
-                  }
-              }
+        steps {
+          container('docker') {
+            sh 'echo $CONTAINER_REGISTRY_CREDENTIALS_PSW | docker login --username $CONTAINER_REGISTRY_CREDENTIALS_USR --password-stdin'
+            sh 'docker push lanxic/hello-world:latest'
           }
+        }
       }
       stage('Fetch config Aws-Eks') {
           steps {
