@@ -34,20 +34,20 @@ pipeline {
               }
           }
       }
-      stage('Restart pod') {
-          steps {
-              script {
-                  def podNames = sh(script: 'kubectl get pods -n dev -o name | grep hello-world', returnStdout: true).trim()
-                  if (podNames) {
-                      podNames.split().each { pod ->
-                          def podName = pod.replaceFirst('pod/', '')
-                          sh "kubectl delete pod $podName -n dev"
-                      }
-                  } else {
-                      echo "No pods found matching the criteria."
-                  }
-              }
-          }
-      }
+      // stage('Restart pod') {
+      //     steps {
+      //         script {
+      //             def podNames = sh(script: 'kubectl get pods -n dev -o name | grep hello-world', returnStdout: true).trim()
+      //             if (podNames) {
+      //                 podNames.split().each { pod ->
+      //                     def podName = pod.replaceFirst('pod/', '')
+      //                     sh "kubectl delete pod $podName -n dev"
+      //                 }
+      //             } else {
+      //                 echo "No pods found matching the criteria."
+      //             }
+      //         }
+      //     }
+      // }
   }
 }
