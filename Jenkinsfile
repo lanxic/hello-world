@@ -3,11 +3,7 @@ pipeline {
     AWS_DEFAULT_REGION = 'ap-southeast-3'
   }
 
-  agent {
-      node {
-          label 'agent1'
-      }
-  }
+  agent any 
   stages {
       stage('Build-Docker-Image') {
           steps {
