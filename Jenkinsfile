@@ -13,27 +13,27 @@ pipeline {
           }
         }
       }
-      stage('Login and Push to register hub') {
-          steps {
-              script {
-                  // Run steps inside a Docker container
-                  container('docker') {
-                      sh 'echo $CONTAINER_REGISTRY_CREDENTIALS_PSW | docker login --username $CONTAINER_REGISTRY_CREDENTIALS_USR --password-stdin'
-                      sh 'docker push lanxic/hello-world:latest'
-                  }
-              }
-          }
-      }
-      stage('Fetch config Aws-Eks') {
-          steps {
-              script {
-                  withCredentials([awsAccessKey(credentialsId: 'aws-credential', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                      sh 'aws --version'
-                      sh 'aws eks update-kubeconfig --name eks-cleanmedic'
-                  }
-              }
-          }
-      }
+      // stage('Login and Push to register hub') {
+      //     steps {
+      //         script {
+      //             // Run steps inside a Docker container
+      //             container('docker') {
+      //                 sh 'echo $CONTAINER_REGISTRY_CREDENTIALS_PSW | docker login --username $CONTAINER_REGISTRY_CREDENTIALS_USR --password-stdin'
+      //                 sh 'docker push lanxic/hello-world:latest'
+      //             }
+      //         }
+      //     }
+      // }
+      // stage('Fetch config Aws-Eks') {
+      //     steps {
+      //         script {
+      //             withCredentials([awsAccessKey(credentialsId: 'aws-credential', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+      //                 sh 'aws --version'
+      //                 sh 'aws eks update-kubeconfig --name eks-cleanmedic'
+      //             }
+      //         }
+      //     }
+      // }
       // stage('Restart pod') {
       //     steps {
       //         script {
