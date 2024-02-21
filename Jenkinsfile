@@ -1,6 +1,5 @@
 pipeline {
   environment {
-    CONTAINER_REGISTRY_CREDENTIALS = credentials('dockerhub-login')
     AWS_DEFAULT_REGION = 'ap-southeast-3'
   }
 
@@ -9,7 +8,6 @@ pipeline {
           label 'agent1'
       }
   }
-  
   stages {
       stage('Build-Docker-Image') {
           steps {
