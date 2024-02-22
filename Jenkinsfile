@@ -41,7 +41,7 @@ pipeline {
         stage('Clean-Docker-Image') {
           steps {
               script {
-                sh 'echo "y"|docker system prune --all'
+                sh 'docker system prune --all --force'
               }
           }
         }
