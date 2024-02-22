@@ -8,11 +8,11 @@ pipeline {
 
     stages {
         stage('Build-Docker-Image') {
-            steps {
-                script {
-                  sh 'docker build -t lanxic/hello-world:latest .'
-                }
-            }
+          steps {
+              script {
+                sh 'docker build -t lanxic/hello-world:latest .'
+              }
+          }
         }
         stage('Login and Push to Docker Hub') {
             steps {
@@ -36,6 +36,13 @@ pipeline {
                   sh "kubectl rollout restart deployment hello-world -n dev"
               }
             }
+          }
+        }
+        stage('Clean-Docker-Image') {
+          steps {
+              script {
+                sh 'echo "y"|docker system prune --all'
+              }
           }
         }
     }
