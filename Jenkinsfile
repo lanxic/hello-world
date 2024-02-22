@@ -13,17 +13,17 @@ pipeline {
           }
         }
       }
-      // stage('Login and Push to register hub') {
-      //     steps {
-      //         script {
-      //             // Run steps inside a Docker container
-      //             container('docker') {
-      //                 sh 'echo $CONTAINER_REGISTRY_CREDENTIALS_PSW | docker login --username $CONTAINER_REGISTRY_CREDENTIALS_USR --password-stdin'
-      //                 sh 'docker push lanxic/hello-world:latest'
-      //             }
-      //         }
-      //     }
-      // }
+      stage('Login and Push to register hub') {
+          steps {
+              script {
+                  // Run steps inside a Docker container
+                  container('docker') {
+                      sh 'echo $CONTAINER_REGISTRY_CREDENTIALS_PSW | docker login --username $CONTAINER_REGISTRY_CREDENTIALS_USR --password-stdin'
+                      sh 'docker push lanxic/hello-world:latest'
+                  }
+              }
+          }
+      }
       // stage('Fetch config Aws-Eks') {
       //     steps {
       //         script {
