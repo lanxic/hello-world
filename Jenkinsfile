@@ -10,8 +10,7 @@ pipeline {
         stage('Build-Docker-Image') {
             steps {
                 script {
-                    // Build the Docker image
-                    sh 'docker build -t lanxic/hello-world:latest .'
+                  sh 'docker build -t lanxic/hello-world:latest .'
                 }
             }
         }
@@ -23,7 +22,7 @@ pipeline {
                 }
             }
         }
-        stage('Fetch config Aws-Eks') {
+        stage('Restart Service') {
           steps {
             script {
               withCredentials([[
@@ -34,7 +33,7 @@ pipeline {
               ]]) {
                   sh 'aws --version'
                   sh 'aws eks update-kubeconfig --name eks-cleanmedic'
-                  
+                  sh "kubectl rollout restart deployment hello-world -n dev"
               }
             }
           }
