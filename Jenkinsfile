@@ -33,7 +33,7 @@ pipeline {
                 secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
               ]]) {
                   sh 'aws --version'
-                  sh 'aws eks update-kubeconfig --name eks-cmi'
+                  sh 'aws eks update-kubeconfig --name eks-cleanmedic'
                   
               }
             }
