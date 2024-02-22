@@ -1,6 +1,6 @@
 pipeline {
     environment {
-        AWS_DEFAULT_REGION = 'ap-southeast-3 '
+        AWS_DEFAULT_REGION = 'ap-southeast-3'
     }
 
     agent any
@@ -10,7 +10,7 @@ pipeline {
             steps {
                 script {
                     // Run steps inside a Docker container
-                    container('lanxic/hello-world') {
+                    container('docker') {
                         sh 'docker build -t lanxic/hello-world:latest .'
                     }
                 }
@@ -20,7 +20,7 @@ pipeline {
             steps {
                 script {
                     // Run steps inside a Docker container
-                    container('lanxic/hello-world') {
+                    container('docker') {
                         // Use Credentials Binding Plugin to securely retrieve Docker Hub credentials
                         withCredentials([usernamePassword(credentialsId: 'dockerhub-login', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
                             sh "echo \$DOCKER_HUB_PASSWORD | docker login --username \$DOCKER_HUB_USERNAME --password-stdin"
