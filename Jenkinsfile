@@ -1,6 +1,7 @@
 pipeline {
     environment {
-        AWS_DEFAULT_REGION = 'ap-southeast-3'
+      DOCKER_REGISTRY_CREDENTIALS = credentials('dockerhub-login')
+      AWS_DEFAULT_REGION = 'ap-southeast-3'
     }
 
     agent any
@@ -17,15 +18,26 @@ pipeline {
         stage('Login and Push to Docker Hub') {
             steps {
                 script {
-                    // Use Credentials Binding Plugin to securely retrieve Docker Hub credentials
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub-login', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
-                        // Login to Docker Hub
-                        sh "echo \$DOCKER_HUB_PASSWORD | docker login --username \$DOCKER_HUB_USERNAME --password-stdin"
-                        // Push the Docker image to Docker Hub
-                        sh 'docker push lanxic/hello-world:latest'
-                    }
+                  sh 'echo $DOCKER_REGISTRY_CREDENTIALS_PSW | docker login --username $DOCKER_REGISTRY_CREDENTIALS_USR --password-stdin'
+                  sh 'docker push lanxic/hello-world:latest'
                 }
             }
+        }
+        stage('Fetch config Aws-Eks') {
+          steps {
+            script {
+              withCredentials([[
+                $class: 'AmazonWebServicesCredentialsBinding',
+                credentialsId: 'aws-credential',
+                accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+              ]]) {
+                  sh 'aws --version'
+                  sh 'aws eks update-kubeconfig --name eks-cmi'
+                  
+              }
+            }
+          }
         }
     }
 }
