@@ -1,0 +1,58 @@
+# Install CloudWatch Agent on the ECS instances
+resource "aws_cloudwatch_log_group" "container_logs" {
+  name              = "/ecs/${local.ecs.service_name}"
+  retention_in_days = 7
+
+  tags = {
+    Environment = "testing"
+    Application = aws_ecr_repository.repository.name
+  }
+}
+
+# Install CloudWatch Agent on ECS instances using SSM document
+resource "aws_ssm_document" "cloudwatch_agent" {
+  name          = "CloudWatchAgent"
+  document_type = "Command"
+  content = jsonencode({
+    schemaVersion = "2.2",
+    description   = "Install and configure CloudWatch Agent",
+    mainSteps = [
+      {
+        action = "aws:runShellScript",
+        name   = "runShellScript",
+        inputs = {
+          runCommand = [
+            "wget https://s3.amazonaws.com/amazoncloudwatch-agent/linux/amd64/latest/AmazonCloudWatchAgent.zip -O /tmp/AmazonCloudWatchAgent.zip",
+            "unzip /tmp/AmazonCloudWatchAgent.zip -d /opt/aws/amazon-cloudwatch-agent",
+            "chmod +x /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent",
+            "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/ecs-service/cloudwatch-agent-config",
+            "systemctl start amazon-cloudwatch-agent"
+          ]
+        }
+      }
+    ]
+  })
+}
+
+# Define CloudWatch Agent configuration in an SSM parameter
+resource "aws_ssm_parameter" "cloudwatch_agent_config" {
+  name = "/ecs/${local.ecs.service_name}/cloudwatch-agent-config"
+  type = "String"
+  value = jsonencode({
+    "logs" : {
+      "logs_collected" : {
+        "files" : {
+          "collect_list" : [
+            {
+              "file_path" : "/var/log/ecs/ecs-agent.log",
+              "log_group_name" : "/ecs/${local.ecs.service_name}",
+              "log_stream_name" : "${local.ecs.service_name}-ecs-agent.log",
+              "timestamp_format" : "%Y-%m-%dT%H:%M:%SZ",
+              "timezone" : "UTC"
+            }
+          ]
+        }
+      }
+    }
+  })
+}
