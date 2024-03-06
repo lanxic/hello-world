@@ -1,7 +1,10 @@
 FROM python:alpine as release
 
 # Install component
-RUN apk add --no-cache wget gcompat
+RUN apk add --no-cache wget gcompat tzdata
+
+# Set the timezone to Makassar
+ENV TZ=Asia/Makassar
 
 WORKDIR /app
 
