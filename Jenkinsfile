@@ -8,6 +8,13 @@ pipeline {
     agent any
 
     stages {
+        stage('Clean-Docker-Image') {
+          steps {
+            script {
+              sh 'docker system prune --all --force'
+            }
+          }
+        }
         stage('Build-Docker-Image') {
           steps {
               script {
@@ -28,18 +35,14 @@ pipeline {
                 withCredentials([gitUsernamePassword(credentialsId: 'hw-tester', gitToolName: 'git-tool')]) {
                     echo 'Updating Image TAG'
                     sh 'sed -i "s/hello-world:.*/hello-world:${VERSION}/g" manifest-repo/values.yaml'
+                    echo 'Git Config'
+                    sh 'git config --global user.email "Jenkins@company.com"'
+                    sh 'git config --global user.name "Jenkins-ci"'
                     sh 'git add manifest-repo/values.yaml'
                     sh 'git commit -am "Update Image tag"'
                     sh "git push HEAD"
                 }
             }
-        }
-        stage('Clean-Docker-Image') {
-          steps {
-              script {
-                sh 'docker system prune --all --force'
-              }
-          }
         }
     }
 }
