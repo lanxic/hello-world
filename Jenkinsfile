@@ -46,7 +46,7 @@ pipeline {
                     // Commit changes
                     sh 'git commit -am "Update Image tag"'
                     // Push changes to the master branch
-                    sh 'git push origin master'
+                    sh 'git push git@github.com:lanxic/manifest-repo.git'
                 }
             }
         }
