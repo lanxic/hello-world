@@ -32,12 +32,12 @@ pipeline {
         }
         stage('Update Tag Manifest') {
             steps {
-                withCredentials([gitUsernamePassword(credentialsId: 'hw-tester', gitToolName: 'git-tool')]) {
+                withCredentials([gitUsernamePassword(credentialsId: 'github-cmi', gitToolName: 'git-tool')]) {
                     echo 'Updating Image TAG'
                     sh 'sed -i "s/hello-world:.*/hello-world:${VERSION}/g" manifest-repo/values.yaml'
                     echo 'Git Config'
                     // Set Git configurations
-                    sh 'git config --global user.email "Jenkins@company.com"'
+                    sh 'git config --global user.email "sysops@cleanmedic.co.id"'
                     sh 'git config --global user.name "Jenkins-ci"'
                     // Add changes
                     sh 'git add manifest-repo/values.yaml'
