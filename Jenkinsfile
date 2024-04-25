@@ -30,17 +30,21 @@ pipeline {
                 }
             }
         }
-        stage('Update Tag') {
+        stage('Update Tag Manifest') {
             steps {
                 withCredentials([gitUsernamePassword(credentialsId: 'hw-tester', gitToolName: 'git-tool')]) {
                     echo 'Updating Image TAG'
                     sh 'sed -i "s/hello-world:.*/hello-world:${VERSION}/g" manifest-repo/values.yaml'
                     echo 'Git Config'
+                    // Set Git configurations
                     sh 'git config --global user.email "Jenkins@company.com"'
                     sh 'git config --global user.name "Jenkins-ci"'
+                    // Add changes
                     sh 'git add manifest-repo/values.yaml'
+                    // Commit changes
                     sh 'git commit -am "Update Image tag"'
-                    sh "git push master"
+                    // Push changes to the master branch
+                    sh 'git push origin master'
                 }
             }
         }
