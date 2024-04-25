@@ -39,8 +39,8 @@ pipeline {
                     sh 'sed -i "s/hello-world:.*/hello-world:${VERSION}/g" hello-world/values.yaml'
                     echo 'Git Config'
                     // Set Git configurations
-                    sh 'git config --global user.email "sysops@cleanmedic.co.id"'
-                    sh 'git config --global user.name "Jenkins-ci"'
+                    sh 'git config --global user.email "lanxic@gmail.com"'
+                    sh 'git config --global user.name "lanxic"'
                     // Add changes
                     sh 'git add hello-world/values.yaml'
                     // Commit changes
