@@ -40,7 +40,7 @@ pipeline {
                     sh 'git config --global user.name "Jenkins-ci"'
                     sh 'git add manifest-repo/values.yaml'
                     sh 'git commit -am "Update Image tag"'
-                    sh "git push HEAD"
+                    sh "git push master"
                 }
             }
         }
