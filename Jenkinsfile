@@ -36,13 +36,13 @@ pipeline {
                     // Clone the repository using SSH key
                     git credentialsId: 'github-hw', url: 'git@github.com:lanxic/manifest-repo.git', branch: 'master'
                     echo 'Updating Image TAG'
-                    sh 'sed -i "s/hello-world:.*/hello-world:${VERSION}/g" manifest-repo/values.yaml'
+                    sh 'sed -i "s/hello-world:.*/hello-world:${VERSION}/g" hello-world/values.yaml'
                     echo 'Git Config'
                     // Set Git configurations
                     sh 'git config --global user.email "sysops@cleanmedic.co.id"'
                     sh 'git config --global user.name "Jenkins-ci"'
                     // Add changes
-                    sh 'git add manifest-repo/values.yaml'
+                    sh 'git add hello-world/values.yaml'
                     // Commit changes
                     sh 'git commit -am "Update Image tag"'
                     // Push changes to the master branch
