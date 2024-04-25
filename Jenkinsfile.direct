@@ -2,7 +2,6 @@ pipeline {
     environment {
       DOCKER_REGISTRY_CREDENTIALS = credentials('dockerhub-login')
       AWS_DEFAULT_REGION = 'ap-southeast-3'
-      VERSION = "${env.BUILD_ID}"
     }
 
     agent any
@@ -11,7 +10,7 @@ pipeline {
         stage('Build-Docker-Image') {
           steps {
               script {
-                sh "docker build -t lanxic/hello-world:${VERSION} ."
+                sh 'docker build -t lanxic/hello-world:latest .'
               }
           }
         }
@@ -19,20 +18,25 @@ pipeline {
             steps {
                 script {
                   sh 'echo $DOCKER_REGISTRY_CREDENTIALS_PSW | docker login --username $DOCKER_REGISTRY_CREDENTIALS_USR --password-stdin'
-                  sh "docker push lanxic/hello-world:${VERSION}"
+                  sh 'docker push lanxic/hello-world:latest'
                 }
             }
         }
-        stage('Update Tag') {
-            steps {
-                withCredentials([gitUsernamePassword(credentialsId: 'hw-tester', gitToolName: 'git-tool')]) {
-                    echo 'Updating Image TAG'
-                    sh 'sed -i "s/hello-world:.*/hello-world:${VERSION}/g" manifest-repo/values.yaml'
-                    sh 'git add manifest-repo/values.yaml'
-                    sh 'git commit -am "Update Image tag"'
-                    sh "git push HEAD"
-                }
+        stage('Restart Service') {
+          steps {
+            script {
+              withCredentials([[
+                $class: 'AmazonWebServicesCredentialsBinding',
+                credentialsId: 'aws-credential',
+                accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+              ]]) {
+                  sh 'aws --version'
+                  sh 'aws eks update-kubeconfig --name eks-cleanmedic'
+                  sh "kubectl rollout restart deployment hello-world -n dev"
+              }
             }
+          }
         }
         stage('Clean-Docker-Image') {
           steps {
