@@ -15,21 +15,21 @@ pipeline {
             }
           }
         }
-        // stage('Build-Docker-Image') {
-        //   steps {
-        //       script {
-        //         sh "docker build -t lanxic/hello-world:${VERSION} ."
-        //       }
-        //   }
-        // }
-        // stage('Login and Push to Docker Hub') {
-        //     steps {
-        //         script {
-        //           sh 'echo $DOCKER_REGISTRY_CREDENTIALS_PSW | docker login --username $DOCKER_REGISTRY_CREDENTIALS_USR --password-stdin'
-        //           sh "docker push lanxic/hello-world:${VERSION}"
-        //         }
-        //     }
-        // }
+        stage('Build-Docker-Image') {
+          steps {
+              script {
+                sh "docker build -t lanxic/hello-world:${VERSION} ."
+              }
+          }
+        }
+        stage('Login and Push to Docker Hub') {
+            steps {
+                script {
+                  sh 'echo $DOCKER_REGISTRY_CREDENTIALS_PSW | docker login --username $DOCKER_REGISTRY_CREDENTIALS_USR --password-stdin'
+                  sh "docker push lanxic/hello-world:${VERSION}"
+                }
+            }
+        }
         stage('Update Tag Manifest') {
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'github-hw', keyFileVariable: 'key')]) {
