@@ -32,9 +32,9 @@ pipeline {
         // }
         stage('Update Tag Manifest') {
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'jenkins', keyFileVariable: 'key')]) {
+                withCredentials([sshUserPrivateKey(credentialsId: 'github-cmi', keyFileVariable: 'key')]) {
                     // Clone the repository using SSH key
-                    git credentialsId: 'jenkins', url: 'git@github.com:lanxic/manifest-repo.git', branch: 'master'
+                    git credentialsId: 'github-cmi', url: 'git@github.com:lanxic/manifest-repo.git', branch: 'master'
                     echo 'Updating Image TAG'
                     sh 'sed -i "s/hello-world:.*/hello-world:${VERSION}/g" hello-world/values.yaml'
                     echo 'Git Config'
