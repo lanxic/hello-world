@@ -46,6 +46,7 @@ pipeline {
                     // Commit changes
                     sh 'git commit -am "Update Image tag"'
                     // Push changes to the master branch
+                    // make sure have install ssh-key in server-jenkins
                     sh 'git push git@github.com:lanxic/manifest-repo.git'
                 }
             }
