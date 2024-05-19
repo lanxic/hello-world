@@ -15,6 +15,7 @@ pipeline {
                 }
             }
         }
+
         stage('Build-Docker-Image') {
             steps {
                 script {
@@ -22,6 +23,7 @@ pipeline {
                 }
             }
         }
+
         stage('Login and Push to Docker Hub') {
             steps {
                 script {
@@ -30,37 +32,42 @@ pipeline {
                 }
             }
         }
+
         stage('Update Tag Manifest') {
-          steps {
-              withCredentials([sshUserPrivateKey(credentialsId: 'github-hw', keyFileVariable: 'key')]) {
-                  script {
-                      sh """
-                      # Set up SSH agent with the provided key
-                      eval ${(ssh-agent -s)}
-                      ssh-add ${key}
-                      
-                      # Clone the repository
-                      git clone git@github.com:lanxic/manifest-repo.git -b master
-                      
-                      # Update the image tag in the values.yaml file
-                      echo 'Updating Image TAG'
-                      sed -i "s/hello-world:.*/hello-world:${VERSION}/g" manifest-repo/hello-world/values.yaml
-                      
-                      # Configure git user
-                      git config --global user.email "lanxic@gmail.com"
-                      git config --global user.name "lanxic"
-                      
-                      # Add and commit changes
-                      cd manifest-repo
-                      git add hello-world/values.yaml
-                      git commit -m "Update Image tag to ${VERSION}"
-                      
-                      # Push changes back to the repository
-                      git push
-                      """
-                  }
-              }
-          }
-      }
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'github-hw', keyFileVariable: 'key')]) {
+                    script {
+                        try {
+                            // Clone the repository using SSH key
+                            git credentialsId: 'github-hw', url: 'git@github.com:lanxic/manifest-repo.git', branch: 'master'
+                            echo 'Updating Image TAG'
+
+                            // Update the image tag in the values.yaml file
+                            sh 'sed -i "s/hello-world:.*/hello-world:${VERSION}/g" hello-world/values.yaml'
+
+                            echo 'Git Config'
+
+                            // Set Git configurations
+                            sh 'git config --global user.email "lanxic@gmail.com"'
+                            sh 'git config --global user.name "lanxic"'
+
+                            // Add changes
+                            sh 'git add hello-world/values.yaml'
+
+                            // Commit changes
+                            sh 'git commit -m "Update Image tag to ${VERSION}"'
+
+                            // Push changes to the master branch
+                            sh 'GIT_SSH_COMMAND="ssh -i $key" git push origin master'
+
+                        } catch (Exception e) {
+                            echo "An error occurred: ${e.getMessage()}"
+                            currentBuild.result = 'FAILURE'
+                            throw e
+                        }
+                    }
+                }
+            }
+        }
     }
 }
