@@ -61,7 +61,7 @@ pipeline {
                                 sh "git commit -m 'Update Image tag to ${VERSION}'"
 
                                 // Push changes to the master branch using the SSH key
-                                sh "GIT_SSH_COMMAND='ssh -i ${SSH_KEY}' git push origin master"
+                                sh "cd ${repoDir}; GIT_SSH_COMMAND='ssh -i ${SSH_KEY}' git push origin master"
                             }
                         } catch (Exception e) {
                             echo "An error occurred: ${e.getMessage()}"
@@ -71,13 +71,6 @@ pipeline {
                     }
                 }
             }
-        }
-    }
-
-    post {
-        always {
-            // Clean up workspace after execution
-            cleanWs()
         }
     }
 }
