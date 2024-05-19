@@ -33,20 +33,7 @@ pipeline {
         stage('Update Tag Manifest') {
             steps {
                 script {
-                  sh 'git clone git@github.com:lanxic/manifest-repo.git -b master'
-                  sh 'cd manifest-repo'
-                  echo 'Updating Image TAG'
-                  sh 'sed -i "s/hello-world:.*/hello-world:${VERSION}/g" hello-world/values.yaml'
-                  // Set Git configurations
-                  sh 'git config --global user.email "lanxic@gmail.com"'
-                  sh 'git config --global user.name "lanxic"'
-                  // Add changes
-                  sh 'git add hello-world/values.yaml'
-                  // Commit changes
-                  sh 'git commit -am "Update Image tag"'
-                  // Push changes to the master branch
-                  // make sure have install ssh-key in server-jenkins
-                  sh 'git push git@github.com:lanxic/manifest-repo.git'
+                   sh "/var/lib/jenkins/scripts/update-manifest.sh ${VERSION}"
                 }
             }
         }
