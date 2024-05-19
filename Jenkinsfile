@@ -40,9 +40,9 @@ pipeline {
                         def repoDir = 'manifest-repo'
                         try {
                             // Clone the repository using SSH key into a specific directory
-                            sh "rm -rf ${repoDir}"  // Clean up if the directory already exists
-                            sh "git clone git@github.com:lanxic/manifest-repo.git ${repoDir}"
-                            dir(repoDir) {
+                            sh "rm -rf '${repoDir}'"  // Clean up if the directory already exists
+                            sh "git clone git@github.com:lanxic/manifest-repo.git '${repoDir}'"
+                            dir("${repoDir}") {
                                 echo 'Updating Image TAG'
 
                                 // Update the image tag in the values.yaml file
@@ -71,6 +71,13 @@ pipeline {
                     }
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            // Clean up workspace after execution
+            cleanWs()
         }
     }
 }
