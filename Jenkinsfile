@@ -33,28 +33,50 @@ pipeline {
         }
         
         stage('K8S') {
-            withCredentials([sshUserPrivateKey(credentialsId: 'github-hw', keyFileVariable: 'SSH_KEY')]) {
-            def repoDir = "${WORKSPACE}/manifest-repo"
-            echo 'Updating Image TAG'
-            try {
-                sh "rm -rf '${repoDir}'"
-                sh "git clone git@github.com:lanxic/manifest-repo.git '$repoDir'"
-                dir("$repoDir") {
-                echo 'Updating Image TAG'
-                sh "sed -i 's/hello-world:.*/hello-world:$VERSION/g' hello-world/values.yaml"
-                echo 'Git Config'
-                sh 'git config --global user.email "sysadmin@cleanmedicindus.com"'
-                sh 'git config --global user.name "sysadmin"'
-                sh 'git add hello-world/values.yaml'
-                sh "git commit -m 'Update Image tag to $VERSION'"
-                sh "git push origin master"
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'github-hw', keyFileVariable: 'SSH_KEY')]) {
+                    script {
+                        def repoDir = "${WORKSPACE}/manifest-repo"
+                        echo 'Starting K8S Stage: Updating Image TAG'
+
+                        try {
+                            // Clean up any existing repo directory
+                            sh "rm -rf '${repoDir}'"
+
+                            // Clone the repository using the SSH key
+                            sh """
+                            GIT_SSH_COMMAND="ssh -i $SSH_KEY -o StrictHostKeyChecking=no" \
+                            git clone git@github.com:lanxic/manifest-repo.git '${repoDir}'
+                            """
+
+                            // Navigate to the repo directory and update the image tag
+                            dir(repoDir) {
+                                echo 'Updating Image TAG in values.yaml'
+                                sh "sed -i 's/hello-world:.*/hello-world:$VERSION/g' hello-world/values.yaml"
+
+                                // Git configuration
+                                echo 'Configuring Git'
+                                sh 'git config --global user.email "sysadmin@cleanmedicindus.com"'
+                                sh 'git config --global user.name "sysadmin"'
+
+                                // Commit and push the changes
+                                echo 'Committing and pushing changes'
+                                sh 'git add hello-world/values.yaml'
+                                sh "git commit -m 'Update Image tag to $VERSION'"
+                                sh """
+                                GIT_SSH_COMMAND="ssh -i $SSH_KEY -o StrictHostKeyChecking=no" \
+                                git push origin master
+                                """
+                            }
+                        } catch (Exception e) {
+                            echo "An error occurred: ${e.getMessage()}"
+                            currentBuild.result = 'FAILURE'
+                            throw e
+                        }
+                    }
                 }
-            } catch (Exception e) {
-                echo "An error occurred: ${e.getMessage()}"
-                currentBuild.result = 'FAILURE'
-                throw e
-            }
             }
         }
+
     }
 }
