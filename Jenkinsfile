@@ -18,7 +18,7 @@ pipeline {
         stage('Build-Docker-Image') {
             steps {
                 script {
-                    sh "docker build -t lanxic/hello-world:${VERSION} ."
+                    sh "docker build -t registry.wwwaste.io/hello-world:${VERSION} ."
                 }
             }
         }
