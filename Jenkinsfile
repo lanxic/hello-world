@@ -38,6 +38,8 @@ pipeline {
                     script {
                         def repoDir = "${WORKSPACE}/manifest-repo"
                         echo 'Starting K8S Stage: Updating Image TAG'
+                        echo 'start to ssh-keys from github'
+                        sh "ssh-keyscan github.com"
 
                         try {
                             // Clean up any existing repo directory
