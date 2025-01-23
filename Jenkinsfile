@@ -1,6 +1,6 @@
 pipeline {
     environment {
-        DOCKER_REGISTRY_CREDENTIALS = credentials('dockerhub-login')
+        DOCKER_REGISTRY_CREDENTIALS = credentials('registry-wwwaste-login')
         VERSION = "${env.BUILD_ID}"
     }
 
