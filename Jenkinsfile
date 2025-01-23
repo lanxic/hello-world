@@ -44,13 +44,10 @@ pipeline {
                             sh "rm -rf '${repoDir}'"
 
                             // Clone the repository using the SSH key
-                            sh """
-                            GIT_SSH_COMMAND="ssh -i $SSH_KEY -o StrictHostKeyChecking=no" \
-                            git clone git@github.com:lanxic/manifest-repo.git '${repoDir}'
-                            """
+                            sh "git clone git@github.com:lanxic/manifest-repo.git '$repoDir'"
 
                             // Navigate to the repo directory and update the image tag
-                            dir(repoDir) {
+                            dir("$repoDir") {
                                 echo 'Updating Image TAG in values.yaml'
                                 sh "sed -i 's/hello-world:.*/hello-world:$VERSION/g' hello-world/values.yaml"
 
@@ -63,10 +60,7 @@ pipeline {
                                 echo 'Committing and pushing changes'
                                 sh 'git add hello-world/values.yaml'
                                 sh "git commit -m 'Update Image tag to $VERSION'"
-                                sh """
-                                GIT_SSH_COMMAND="ssh -i $SSH_KEY -o StrictHostKeyChecking=no" \
-                                git push origin master
-                                """
+                                sh "git push origin master"
                             }
                         } catch (Exception e) {
                             echo "An error occurred: ${e.getMessage()}"
