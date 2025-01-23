@@ -34,7 +34,7 @@ pipeline {
         
         stage('K8S') {
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'github-hw', keyFileVariable: 'SSH_KEY')]) {
+                withCredentials([sshUserPrivateKey(credentialsId: 'github-cmi', keyFileVariable: 'SSH_KEY')]) {
                     script {
                         def repoDir = "${WORKSPACE}/manifest-repo"
                         echo 'Starting K8S Stage: Updating Image TAG'
